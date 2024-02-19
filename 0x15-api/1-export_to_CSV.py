@@ -1,18 +1,24 @@
 #!/usr/bin/python3
 """This script exports to-do list info for a given employee ID to CSV format."""
 import csv
-import requests
-import sys
+from requests import get
+from sys import argv
+
+
+def cvsWrite(user):
+    """This writes to csv"""
+    data = get('https://jsonplaceholder.typicode.com/todos?userId={}'.format(
+        user)).json()
+    name = get('https://jsonplaceholder.typicode.com/users/{}'.format(
+        user)).json().get('username')
+    employ_data = open('{}.csv'.format(user), 'w')
+    cwrite = csv.writer(employ_data, quoting=csv.QUOTE_ALL)
+    for line in data:
+        lined = [line.get('userId'), name,
+                 line.get('completed'), line.get('title')]
+        cwrite.writerow(lined)
+    employ_data.close()
+
 
 if __name__ == "__main__":
-	user_id = sys.argv[1]
-	url = "https://jsonplaceholder.typicode.com/"
-	user = requests.get(url + "users/{}".format(user_id)).json()
-	username = user.get("username")
-	todos = request.get(url + "todos", params={"userId": user_id}).json()
-
-	with open("{}.csv".format(user_id), "w", newline="") as csvfile:
-		writer = csv.write(csvfile, quoting=csv.QUOTE_ALL)
-		[writer.writerow(
-			[user_id, username, t.get("completes"), t.get("title")]
-		) for t in todos]
+    cvsWrite(argv[1])
